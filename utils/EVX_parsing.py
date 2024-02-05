@@ -6,7 +6,28 @@ import os
 import numpy as np
 from alive_progress import alive_bar
 
-ignore = set(["save", "pitches", "oscorer", "wp", "lp", "save", "timeofgame", "wp", "lp", "gwrbi", "edittime", "howscored", "howentered", "inputter", "scorer", "translator"])
+ignore = set(
+    [
+        "save",
+        "pitches",
+        "oscorer",
+        "wp",
+        "lp",
+        "save",
+        "timeofgame",
+        "wp",
+        "lp",
+        "gwrbi",
+        "edittime",
+        "howscored",
+        "howentered",
+        "inputter",
+        "scorer",
+        "translator",
+    ]
+)
+
+
 def parse_id(game, lst):
     game["game_id"] = lst[1]
 
@@ -14,8 +35,7 @@ def parse_id(game, lst):
 def parse_info(game, lst):
     global ignore
     if lst[1] not in ignore:
-        game[lst[1]] = lst[2] 
-    
+        game[lst[1]] = lst[2]
 
 
 def parse_start_sub(game, lst):
@@ -203,6 +223,7 @@ def EVX_json_to_csv(path):
     df = pd.DataFrame(rows)
     df.to_csv("plays.csv")
 
+
 # write a function, that takes in a list of games which is a list of dictionaries and returns a dataframe
 def games_to_df(games):
     rows = []
@@ -212,16 +233,16 @@ def games_to_df(games):
             for play in game.get("plays", []):
                 rows.append(
                     {
-                        'date': game['date'],
-                        'home_team': game['home_team'],
-                        'away_team': game['away_team'],
-                        'temp': game['temp'],
-                        'winddir': game['winddir'],
-                        'windspeed': game['windspeed'],
-                        'fieldcond': game['fieldcond'],
-                        'precip': game['precip'],
-                        'start_time': game['start_time'],
-                        'attendance': game['attendance'],
+                        "date": game["date"],
+                        "hometeam": game["hometeam"],
+                        "visteam": game["visteam"],
+                        "temp": game["temp"],
+                        "winddir": game["winddir"],
+                        "windspeed": game["windspeed"],
+                        "fieldcond": game["fieldcond"],
+                        "precip": game["precip"],
+                        "starttime": game["starttime"],
+                        "attendance": game["attendance"],
                         "pitcher": play["pitcher"],
                         "batter": play["batter"],
                         "outcome": play["outcome"],
@@ -231,9 +252,12 @@ def games_to_df(games):
     df = pd.DataFrame(rows)
     return df
 
+
 if __name__ == "__main__":
     playbyplay_directory = "/home/projects/baseball-datasets/data/retrosheet/playbyplay"  # Replace with your actual root directory
     output_path = "/home/projects/baseball-MCS/data/intermediate/all_games.json"
     all_games = aggregate_EVX_files(playbyplay_directory)
     print(f"found {len(all_games)} games")
-    games_to_df(all_games).to_csv("/home/projects/baseball-datasets/data/final/atbats.csv")
+    df = games_to_df(all_games)
+    # get statistics on the df
+    print(df.describe())
